@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             val dataPath = getAppDataDir()
             File(dataPath).mkdirs()
             setupInitialData(File(dataPath))
-            engine = JanusEngine(dataPath, getDeviceId())
+            engine = JanusEngine(dataPath, pantrymanDeviceId())
             loadData()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize engine", e)
@@ -319,7 +319,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Returns a stable per-device ID, generating and persisting one on first call. */
-    private fun getDeviceId(): String {
+    private fun pantrymanDeviceId(): String {
         val key = "device_id"
         var id = prefs.getString(key, null)
         if (id == null) {
@@ -332,7 +332,7 @@ class MainActivity : AppCompatActivity() {
     private fun reloadEngine() {
         try {
             engine.cleanup()
-            engine = JanusEngine(getAppDataDir(), getDeviceId())
+            engine = JanusEngine(getAppDataDir(), pantrymanDeviceId())
             loadData()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to reload engine", e)
