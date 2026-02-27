@@ -177,7 +177,6 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_getAllIngredientsJ
             "name": ingredient.name,
             "slug": ingredient.slug,
             "category": ingredient.category,
-            "kb": ingredient.kb,
             "tags": ingredient.tags,
             "isInPantry": is_in_stock,
             "quantity": quantity,
@@ -230,7 +229,6 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_getIngredientsByCa
                 "name": ingredient.name,
                 "slug": ingredient.slug,
                 "category": ingredient.category,
-                "kb": ingredient.kb,
                 "tags": ingredient.tags,
                 "isInPantry": is_in_stock,
                 "quantity": quantity,
@@ -321,50 +319,43 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_createIngredient(
     manager_ptr: jlong,
     name: JString,
     category: JString,
-    kb_slug: JString,
     tags_json: JString,
 ) -> jboolean {
     if manager_ptr == 0 {
         return 0;
     }
-    
+
     let name_str = match jstring_to_string(&mut env, &name) {
         Ok(n) => n,
         Err(_) => return 0,
     };
-    
+
     let category_str = match jstring_to_string(&mut env, &category) {
         Ok(c) => c,
         Err(_) => return 0,
     };
-    
-    let kb_str = match jstring_to_string(&mut env, &kb_slug) {
-        Ok(kb) => if kb.is_empty() { None } else { Some(kb) },
-        Err(_) => None,
-    };
-    
+
     let tags_str = match jstring_to_string(&mut env, &tags_json) {
         Ok(t) => t,
         Err(_) => "[]".to_string(),
     };
-    
+
     let tags: Option<Vec<String>> = serde_json::from_str(&tags_str).ok();
-    
+
     let ingredient = Ingredient {
         name: name_str.clone(),
         slug: name_str.replace(" ", "_").to_lowercase(),
         file_stem: String::new(),
         category: category_str.clone(),
-        kb: kb_str.clone(),
         tags,
         translations: None,
     };
-    
+
     let manager = unsafe { &mut *(manager_ptr as *mut DataManager) };
-    
-    log_info!("createIngredient called for: name='{}', category='{}', kb_slug='{:?}', tags='{}'", 
-             name_str, category_str, kb_str, tags_str);
-    
+
+    log_info!("createIngredient called for: name='{}', category='{}', tags='{}'",
+             name_str, category_str, tags_str);
+
     match manager.create_ingredient(ingredient) {
         Ok(_) => {
             log_info!("Successfully created ingredient '{}'", name_str);
@@ -386,54 +377,47 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_updateIngredient(
     original_name: JString,
     new_name: JString,
     category: JString,
-    kb_slug: JString,
     tags_json: JString,
 ) -> jboolean {
     if manager_ptr == 0 {
         return 0;
     }
-    
+
     let original_name_str = match jstring_to_string(&mut env, &original_name) {
         Ok(n) => n,
         Err(_) => return 0,
     };
-    
+
     let new_name_str = match jstring_to_string(&mut env, &new_name) {
         Ok(n) => n,
         Err(_) => return 0,
     };
-    
+
     let category_str = match jstring_to_string(&mut env, &category) {
         Ok(c) => c,
         Err(_) => return 0,
     };
-    
-    let kb_str = match jstring_to_string(&mut env, &kb_slug) {
-        Ok(kb) => if kb.is_empty() { None } else { Some(kb) },
-        Err(_) => None,
-    };
-    
+
     let tags_str = match jstring_to_string(&mut env, &tags_json) {
         Ok(t) => t,
         Err(_) => "[]".to_string(),
     };
-    
+
     let tags: Option<Vec<String>> = serde_json::from_str(&tags_str).ok();
-    
+
     let ingredient = Ingredient {
         name: new_name_str.clone(),
         slug: new_name_str.replace(" ", "_").to_lowercase(),
         file_stem: String::new(),
         category: category_str.clone(),
-        kb: kb_str.clone(),
         tags,
         translations: None,
     };
-    
+
     let manager = unsafe { &mut *(manager_ptr as *mut DataManager) };
-    
-    log_info!("updateIngredient called: '{}' -> '{}', category='{}', kb_slug='{:?}', tags='{}'", 
-             original_name_str, new_name_str, category_str, kb_str, tags_str);
+
+    log_info!("updateIngredient called: '{}' -> '{}', category='{}', tags='{}'",
+             original_name_str, new_name_str, category_str, tags_str);
     
     match manager.update_ingredient(&original_name_str, ingredient) {
         Ok(_) => {

@@ -104,6 +104,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "windows-link",
 ]
@@ -116,19 +117,6 @@ checksum = "ba5a308b75df32fe02788e748662718f03fde005016435c444eea572398219fd"
 dependencies = [
  "bytes",
  "memchr",
-]
-
-[[package]]
-name = "cookbook-engine"
-version = "0.1.0"
-dependencies = [
- "android_logger 0.14.1",
- "chrono",
- "log",
- "quick-xml",
- "serde",
- "serde_yaml",
- "thiserror",
 ]
 
 [[package]]
@@ -210,6 +198,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 
 [[package]]
+name = "janus-engine"
+version = "0.1.0"
+dependencies = [
+ "android_logger 0.14.1",
+ "chrono",
+ "log",
+ "quick-xml",
+ "serde",
+ "serde_yaml",
+ "thiserror",
+]
+
+[[package]]
 name = "jni"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -280,7 +281,7 @@ version = "0.1.0"
 dependencies = [
  "android_logger 0.13.3",
  "chrono",
- "cookbook-engine",
+ "janus-engine",
  "jni",
  "log",
  "serde_json",

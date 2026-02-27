@@ -268,7 +268,7 @@ class MainActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
-                val success = engine.createIngredient(name, category, null, tags)
+                val success = engine.createIngredient(name, category, tags)
                 if (success) {
                     allIngredients = engine.getAllIngredients()
                     val newIngredient = allIngredients.find { it.name.equals(name, ignoreCase = true) }

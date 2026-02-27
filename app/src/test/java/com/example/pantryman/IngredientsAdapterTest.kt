@@ -28,7 +28,6 @@ class IngredientsAdapterTest {
         name = name,
         slug = name.lowercase().replace(' ', '-'),
         category = category,
-        kb = null,
         tags = emptyList(),
         isInPantry = isInPantry,
         quantity = quantity,

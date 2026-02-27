@@ -11,7 +11,6 @@ data class Ingredient(
     val name: String,
     val slug: String,
     val category: String,
-    val kb: String?,
     val tags: List<String>,
     val isInPantry: Boolean = false,
     val quantity: String?,
@@ -99,11 +98,10 @@ class JanusEngine(dataDir: String, deviceId: String) {
     fun createIngredient(
         name: String,
         category: String,
-        kbSlug: String? = null,
         tags: List<String>? = null
     ): Boolean {
         val tagsJson = gson.toJson(tags ?: emptyList<String>())
-        return createIngredient(nativePtr, name, category, kbSlug ?: "", tagsJson)
+        return createIngredient(nativePtr, name, category, tagsJson)
     }
     
     /**
@@ -113,11 +111,10 @@ class JanusEngine(dataDir: String, deviceId: String) {
         originalName: String,
         newName: String,
         category: String,
-        kbSlug: String? = null,
         tags: List<String>? = null
     ): Boolean {
         val tagsJson = gson.toJson(tags ?: emptyList<String>())
-        return updateIngredient(nativePtr, originalName, newName, category, kbSlug ?: "", tagsJson)
+        return updateIngredient(nativePtr, originalName, newName, category, tagsJson)
     }
     
     /**
@@ -156,8 +153,8 @@ class JanusEngine(dataDir: String, deviceId: String) {
     private external fun getAllIngredientsJson(nativePtr: Long): String
     private external fun getIngredientsByCategoryJson(nativePtr: Long): String
     private external fun updatePantryStatus(nativePtr: Long, ingredientName: String, addToPantry: Boolean, quantity: Long, quantityType: String): Boolean
-    private external fun createIngredient(nativePtr: Long, name: String, category: String, kbSlug: String, tagsJson: String): Boolean
-    private external fun updateIngredient(nativePtr: Long, originalName: String, newName: String, category: String, kbSlug: String, tagsJson: String): Boolean
+    private external fun createIngredient(nativePtr: Long, name: String, category: String, tagsJson: String): Boolean
+    private external fun updateIngredient(nativePtr: Long, originalName: String, newName: String, category: String, tagsJson: String): Boolean
     private external fun deleteIngredient(nativePtr: Long, ingredientName: String): Boolean
     private external fun getAllCategories(nativePtr: Long): String
 }
