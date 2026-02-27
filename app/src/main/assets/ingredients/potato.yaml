@@ -1,0 +1,20 @@
+name: potato
+slug: potato
+category: vegetable
+kb: potato
+tags:
+- vegetable
+- starch
+translations:
+  en:
+    one: potato
+    other: potatoes
+  de:
+    one: kartoffel
+    other: kartoffeln
+  fr:
+    one: pomme de terre
+    other: pommes de terre
+  es:
+    one: patata
+    other: patatas

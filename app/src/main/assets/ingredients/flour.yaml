@@ -1,0 +1,19 @@
+name: flour
+category: grain
+kb: null
+tags:
+- grain
+slug: flour
+translations:
+  en:
+    one: flour
+    other: flours
+  de:
+    one: mehl
+    other: mehle
+  fr:
+    one: farine
+    other: farines
+  es:
+    one: harina
+    other: harinas

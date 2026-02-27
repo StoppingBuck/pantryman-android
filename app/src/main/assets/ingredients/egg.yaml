@@ -1,0 +1,19 @@
+name: egg
+category: protein
+kb: null
+tags:
+- protein
+slug: egg
+translations:
+  en:
+    one: egg
+    other: eggs
+  de:
+    one: ei
+    other: eier
+  fr:
+    one: œuf
+    other: œufs
+  es:
+    one: huevo
+    other: huevos

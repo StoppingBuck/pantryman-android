@@ -1,0 +1,18 @@
+version: 1
+items:
+- ingredient: potato
+  quantity: 3.0
+  quantity_type: kg
+  last_updated: 2025-05-16
+- ingredient: tomato
+  quantity: 3.0
+  quantity_type: kg
+  last_updated: 2025-05-18
+- ingredient: flour
+  quantity: null
+  quantity_type: ''
+  last_updated: 2025-05-17
+- ingredient: liquid_smoke
+  quantity: null
+  quantity_type: ''
+  last_updated: 2025-05-18

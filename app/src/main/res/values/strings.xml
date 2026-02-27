@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Pantryman</string>
+    <string name="action_settings">Settings</string>
+    <string name="pantry_empty">Your pantry is empty.\nTap + to add items.</string>
+    <string name="hint_search">Search pantry</string>
+    <string name="hint_quantity">Quantity (optional)</string>
+    <string name="hint_unit">Unit</string>
+    <string name="hint_ingredient_name">Ingredient name *</string>
+    <string name="hint_category">Category *</string>
+    <string name="hint_tags">Tags (comma-separated, optional)</string>
+    <string name="hint_search_ingredients">Search ingredients</string>
+    <string name="hint_data_directory">Data directory path</string>
+    <string name="btn_add_item">Add item</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_remove_from_pantry">Remove from pantry</string>
+    <string name="btn_create_new_ingredient">+ Create new ingredient</string>
+    <string name="btn_add_to_pantry">Add to pantry</string>
+    <string name="title_add_to_pantry">Add to Pantry</string>
+    <string name="title_create_ingredient">New Ingredient</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_sync_folder">Sync Folder</string>
+    <string name="sync_folder_none">Not configured</string>
+    <string name="btn_choose_sync_folder">Choose Sync Folder…</string>
+    <string name="btn_sync_now">Sync Now</string>
+    <string name="sync_complete">Sync complete</string>
+    <string name="sync_failed">Sync failed</string>
+    <string name="msg_sync_folder_set">Sync folder configured</string>
+</resources>

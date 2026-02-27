@@ -1,0 +1,20 @@
+category: vegetable
+kb: null
+name: onion
+tags:
+- vegetable
+- aromatic
+slug: onion
+translations:
+  en:
+    one: onion
+    other: onions
+  de:
+    one: zwiebel
+    other: zwiebeln
+  fr:
+    one: oignon
+    other: oignons
+  es:
+    one: cebolla
+    other: cebollas
