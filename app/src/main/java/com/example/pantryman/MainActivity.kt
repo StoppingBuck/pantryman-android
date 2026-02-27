@@ -345,12 +345,18 @@ class MainActivity : AppCompatActivity() {
         val syncDir = DocumentFile.fromTreeUri(this, syncUri) ?: return
         val localDir = File(getAppDataDir())
 
-        // pantry.yaml: copy SAF → local
-        syncDir.findFile("pantry.yaml")?.uri?.let { uri ->
-            contentResolver.openInputStream(uri)?.use { input ->
-                File(localDir, "pantry.yaml").outputStream().use { input.copyTo(it) }
+        // Per-device pantry files: copy every pantry.*.yaml from SAF → local
+        // (includes the legacy pantry.yaml if present; engine reads it as read-only).
+        syncDir.listFiles()
+            .filter { file ->
+                val n = file.name ?: return@filter false
+                n.startsWith("pantry.") && n.endsWith(".yaml")
             }
-        }
+            .forEach { file ->
+                contentResolver.openInputStream(file.uri)?.use { input ->
+                    File(localDir, file.name!!).outputStream().use { input.copyTo(it) }
+                }
+            }
 
         // ingredients/: full mirror (copy new/updated, delete removed)
         val localIngredients = File(localDir, "ingredients").also { it.mkdirs() }
@@ -381,14 +387,16 @@ class MainActivity : AppCompatActivity() {
         val syncDir = DocumentFile.fromTreeUri(this, syncUri) ?: return
         val localDir = File(getAppDataDir())
 
-        // pantry.yaml: copy local → SAF
-        val pantryFile = File(localDir, "pantry.yaml")
-        if (pantryFile.exists()) {
-            val safPantry = syncDir.findFile("pantry.yaml")
-                ?: syncDir.createFile("application/x-yaml", "pantry.yaml")
+        // Per-device pantry: push only this device's pantry.{device-id}.yaml to SAF.
+        // Never touch other devices' files or the legacy pantry.yaml.
+        val devicePantryName = "pantry.${pantrymanDeviceId()}.yaml"
+        val devicePantryFile = File(localDir, devicePantryName)
+        if (devicePantryFile.exists()) {
+            val safPantry = syncDir.findFile(devicePantryName)
+                ?: syncDir.createFile("application/x-yaml", devicePantryName)
             safPantry?.uri?.let { uri ->
                 contentResolver.openOutputStream(uri, "wt")?.use { out ->
-                    pantryFile.inputStream().copyTo(out)
+                    devicePantryFile.inputStream().copyTo(out)
                 }
             }
         }

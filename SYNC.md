@@ -7,15 +7,18 @@ in sync through a shared cloud folder (e.g. pCloud via the Autosync app).
 ## Architecture: Mirror Approach
 
 ```
-SAF folder (pCloud/cloud)         Local app storage (internal)
-  pantry.{device-id}.yaml          ←→          filesDir/cookbook_data/pantry.{device-id}.yaml
-  ingredients/                     filesDir/cookbook_data/ingredients/
-    potato.yaml        ←→            potato.yaml
-    tomato.yaml        ←→            tomato.yaml
+SAF folder (pCloud/cloud)               Local app storage (internal)
+  pantry.android-xxx.yaml    ←pull─     filesDir/cookbook_data/pantry.android-xxx.yaml
+  pantry.kde-yyy.yaml        ─pull→     filesDir/cookbook_data/pantry.kde-yyy.yaml
+  ingredients/                          filesDir/cookbook_data/ingredients/
+    potato.yaml              ←→           potato.yaml
+    tomato.yaml              ←→           tomato.yaml
 ```
 
-- **Sync FROM SAF → local** on `onResume` (SAF is authoritative on open)
-- **Sync TO local → SAF** on `onPause` (local is authoritative on close)
+- **Sync FROM SAF → local** on `onResume`: pulls every `pantry.*.yaml` file from SAF so the
+  engine can merge all devices' pantry states at load time.
+- **Sync TO local → SAF** on `onPause`: pushes only this device's own
+  `pantry.{device-id}.yaml`; never writes to other devices' files or the legacy `pantry.yaml`.
 
 The Rust engine (JanusEngine JNI) operates on local storage only and is reinitialized
 after every sync-in, because DataManager loads data at creation time.
