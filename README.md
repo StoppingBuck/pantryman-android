@@ -1,6 +1,6 @@
 # Pantryman (Android)
 
-An Android app for managing your pantry and recipes. Calls [Janus Engine](https://github.com/mpr/janus-engine) via JNI through a Rust bridge.
+An Android app for managing your pantry and recipes. Calls [Janus Engine](https://github.com/StoppingBuck/janus-engine) via JNI through a Rust bridge.
 
 ## Features
 
@@ -27,7 +27,7 @@ cargo install cargo-ndk
 
 ```bash
 # Clone janus-engine as a sibling directory first
-git clone https://github.com/mpr/janus-engine ../janus-engine
+git clone https://github.com/StoppingBuck/janus-engine ../janus-engine
 
 # Build bridge + install + launch
 ./dev.sh android
