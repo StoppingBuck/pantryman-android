@@ -8,7 +8,7 @@ in sync through a shared cloud folder (e.g. pCloud via the Autosync app).
 
 ```
 SAF folder (pCloud/cloud)         Local app storage (internal)
-  pantry.yaml          ←→          filesDir/cookbook_data/pantry.yaml
+  pantry.{device-id}.yaml          ←→          filesDir/cookbook_data/pantry.{device-id}.yaml
   ingredients/                     filesDir/cookbook_data/ingredients/
     potato.yaml        ←→            potato.yaml
     tomato.yaml        ←→            tomato.yaml
@@ -17,10 +17,10 @@ SAF folder (pCloud/cloud)         Local app storage (internal)
 - **Sync FROM SAF → local** on `onResume` (SAF is authoritative on open)
 - **Sync TO local → SAF** on `onPause` (local is authoritative on close)
 
-The Rust engine (CookbookEngine JNI) operates on local storage only and is reinitialized
+The Rust engine (JanusEngine JNI) operates on local storage only and is reinitialized
 after every sync-in, because DataManager loads data at creation time.
 
-Synced: `ingredients/*.yaml`, `pantry.yaml`
+Synced: `ingredients/*.yaml`, `pantry.{device-id}.yaml`
 Not synced: recipes (Android-only for now)
 
 ## Setup
@@ -37,8 +37,8 @@ Settings → **Sync Now** — runs a full bidirectional sync immediately.
 
 1. Build and install: `./dev.sh android`
 2. First run: Settings → Choose Sync Folder → pick a pCloud folder → confirm URI shown in dialog
-3. Sync out: Add an ingredient to pantry → press Home → check pCloud folder contains updated `pantry.yaml`
-4. Sync in: Modify `pantry.yaml` in the cloud folder via desktop → open app → verify Android shows updated data
+3. Sync out: Add an ingredient to pantry → press Home → check pCloud folder contains updated `pantry.{device-id}.yaml`
+4. Sync in: Modify `pantry.{device-id}.yaml` in the cloud folder via desktop → open app → verify Android shows updated data
 5. Deletion sync: Delete an ingredient YAML from cloud folder → open app → verify ingredient is gone on Android
 6. Manual sync: Settings → Sync Now → verify sync runs and UI updates
 7. No sync folder: Fresh install with no sync folder set → app works normally with local data
@@ -50,7 +50,7 @@ Settings → **Sync Now** — runs a full bidirectional sync immediately.
 - **`"wt"` output mode**: Not all SAF providers support write-truncate mode. If sync-to fails
   silently, try `"w"` instead of `"wt"` in `contentResolver.openOutputStream(uri, "wt")`.
 - **SAF filename quirks**: Some providers rename files created via `createFile()`. Verify that
-  `pantry.yaml` appears with the correct name in pCloud after the first sync-out.
+  `pantry.{device-id}.yaml` appears with the correct name in pCloud after the first sync-out.
 - **Double sync on picker return**: `onResume` fires after the folder picker closes, causing a
   second sync on top of the picker callback's sync. Harmless but redundant.
 

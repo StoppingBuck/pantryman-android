@@ -17,7 +17,7 @@ Pantryman was launched with four ambitions:
 
 Pantryman is meant for people who relate to the quote "*I hate when I go to the kitchen looking for food, and all I find is ingredients.*" Its main purpose is to make it easy to keep an up-to-date overview of what you have in your pantry — and then use that information to show you what recipes you can make. Some people have the ability to look in the fridge and improvise — for everybody else, there is this app.
 
-There's a gazillion cooking apps on the market already. Most of them attempt to tie you to an ecosystem or website of some kind — "create your CookWorld.com user to favorite your recipes, oops we leaked your personal info", etc. This app has nothing like that. No ecosystem, no website, no user creation, etc. Instead, it's BYOB — Bring Your Own Backend. Pantryman stores the ingredients, pantry and recipes as simple text files (YAML for ingredients and pantry, Markdown with YAML frontmatter for recipes). You can put the data directory containing these wherever you want — a local folder, a flash drive, your own self-hosted Nextcloud, a server, Dropbox or your cloud provider of choice... Pantryman doesn't care. It just needs to be able to read it. Your data stays yours by design.
+There's a gazillion cooking apps on the market already. Most of them attempt to tie you to an ecosystem or website of some kind — "create your CookWorld.com user to favorite your recipes, oops we leaked your personal info", etc. This app has nothing like that. No ecosystem, no website, no user creation, etc. Instead, Pantryman's engine has no opinion about where your data lives. Give it a directory, it reads and writes plain text files there. That's it. Put the directory on a flash drive, a self-hosted Nextcloud, Dropbox, pCloud, whatever you already use. Pantryman doesn't care and never will. Your data stays yours by design.
 
 ---
 
@@ -65,13 +65,13 @@ git clone https://github.com/StoppingBuck/janus-engine ../janus-engine
 
 ```
 rust-bridge/
-  src/lib.rs     — JNI bindings (CookbookEngine exposed as Java class)
+  src/lib.rs     — JNI bindings (JanusEngine exposed as Java class)
   Cargo.toml     — cdylib crate, depends on janus-engine
 
 app/
   src/main/java/com/example/pantryman/
     MainActivity.kt     — main activity: UI, SAF sync lifecycle
-    CookbookEngine.kt   — Kotlin wrapper for JNI calls
+    JanusEngine.kt   — Kotlin wrapper for JNI calls
     IngredientsAdapter.kt
     PantryAdapter.kt
 ```

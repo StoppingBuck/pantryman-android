@@ -59,14 +59,15 @@ fn string_to_jstring(env: &mut JNIEnv, rust_string: String) -> Result<jstring, B
 
 // Initialize DataManager
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_createDataManager(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_createDataManager(
     mut env: JNIEnv,
     _class: JClass,
     data_dir_path: JString,
+    device_id: JString,
 ) -> jlong {
     // Initialize logging first
     init_logging();
-    
+
     let data_dir = match jstring_to_string(&mut env, &data_dir_path) {
         Ok(path) => path,
         Err(e) => {
@@ -74,16 +75,24 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_createDataManag
             return 0; // Return null pointer on error
         },
     };
-    
+
+    let device_id_str = match jstring_to_string(&mut env, &device_id) {
+        Ok(id) => id,
+        Err(e) => {
+            log_error!("Failed to convert device_id JString: {:?}", e);
+            return 0;
+        },
+    };
+
     log_info!("Attempting to create DataManager with path: {}", data_dir);
-    
+
     // Let's also check if the directory exists and what's in it
     let dir_path = Path::new(&data_dir);
     if !dir_path.exists() {
         log_error!("Data directory does not exist: {}", data_dir);
         return 0;
     }
-    
+
     log_info!("Data directory exists, checking contents...");
     if let Ok(entries) = std::fs::read_dir(dir_path) {
         for entry in entries {
@@ -93,7 +102,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_createDataManag
         }
     }
 
-    match DataManager::new(dir_path) {
+    match DataManager::new(dir_path, device_id_str) {
         Ok(manager) => {
             log_info!("DataManager created successfully");
             Box::into_raw(Box::new(manager)) as jlong
@@ -107,7 +116,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_createDataManag
 
 // Destroy DataManager
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_destroyDataManager(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_destroyDataManager(
     mut _env: JNIEnv,
     _class: JClass,
     manager_ptr: jlong,
@@ -122,7 +131,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_destroyDataMana
 
 // Get all ingredients as JSON
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_getAllIngredientsJson(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_getAllIngredientsJson(
     mut env: JNIEnv,
     _class: JClass,
     manager_ptr: jlong,
@@ -191,7 +200,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_getAllIngredien
 
 // Get ingredients by category as JSON
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_getIngredientsByCategoryJson(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_getIngredientsByCategoryJson(
     mut env: JNIEnv,
     _class: JClass,
     manager_ptr: jlong,
@@ -241,7 +250,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_getIngredientsB
 
 // Update pantry status for an ingredient
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_updatePantryStatus(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_updatePantryStatus(
     mut env: JNIEnv,
     _class: JClass,
     manager_ptr: jlong,
@@ -306,7 +315,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_updatePantrySta
 
 // Create a new ingredient
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_createIngredient(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_createIngredient(
     mut env: JNIEnv,
     _class: JClass,
     manager_ptr: jlong,
@@ -344,6 +353,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_createIngredien
     let ingredient = Ingredient {
         name: name_str.clone(),
         slug: name_str.replace(" ", "_").to_lowercase(),
+        file_stem: String::new(),
         category: category_str.clone(),
         kb: kb_str.clone(),
         tags,
@@ -369,7 +379,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_createIngredien
 
 // Update an existing ingredient
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_updateIngredient(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_updateIngredient(
     mut env: JNIEnv,
     _class: JClass,
     manager_ptr: jlong,
@@ -413,6 +423,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_updateIngredien
     let ingredient = Ingredient {
         name: new_name_str.clone(),
         slug: new_name_str.replace(" ", "_").to_lowercase(),
+        file_stem: String::new(),
         category: category_str.clone(),
         kb: kb_str.clone(),
         tags,
@@ -438,7 +449,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_updateIngredien
 
 // Delete an ingredient
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_deleteIngredient(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_deleteIngredient(
     mut env: JNIEnv,
     _class: JClass,
     manager_ptr: jlong,
@@ -471,7 +482,7 @@ pub extern "system" fn Java_com_example_pantryman_CookbookEngine_deleteIngredien
 
 // Get all categories
 #[no_mangle]
-pub extern "system" fn Java_com_example_pantryman_CookbookEngine_getAllCategories(
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_getAllCategories(
     mut env: JNIEnv,
     _class: JClass,
     manager_ptr: jlong,

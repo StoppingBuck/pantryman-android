@@ -29,7 +29,7 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var engine: CookbookEngine
+    private lateinit var engine: JanusEngine
     private lateinit var pantryAdapter: PantryAdapter
     private lateinit var prefs: SharedPreferences
     private lateinit var syncDirPicker: ActivityResultLauncher<Uri?>
@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             val dataPath = getAppDataDir()
             File(dataPath).mkdirs()
             setupInitialData(File(dataPath))
-            engine = CookbookEngine(dataPath)
+            engine = JanusEngine(dataPath, getDeviceId())
             loadData()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize engine", e)
@@ -318,10 +318,21 @@ class MainActivity : AppCompatActivity() {
         return prefs.getString(PREF_SYNC_URI, null)?.let { Uri.parse(it) }
     }
 
+    /** Returns a stable per-device ID, generating and persisting one on first call. */
+    private fun getDeviceId(): String {
+        val key = "device_id"
+        var id = prefs.getString(key, null)
+        if (id == null) {
+            id = "android-" + java.util.UUID.randomUUID().toString().replace("-", "").take(12)
+            prefs.edit().putString(key, id).apply()
+        }
+        return id
+    }
+
     private fun reloadEngine() {
         try {
             engine.cleanup()
-            engine = CookbookEngine(getAppDataDir())
+            engine = JanusEngine(getAppDataDir(), getDeviceId())
             loadData()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to reload engine", e)

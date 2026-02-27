@@ -26,7 +26,7 @@ The build has two stages:
 
 ## Architecture rules
 
-- **JNI boundary is the only Kotlin↔Rust seam.** `CookbookEngine.kt` wraps all JNI calls — nothing else should call native methods directly.
+- **JNI boundary is the only Kotlin↔Rust seam.** `JanusEngine.kt` wraps all JNI calls — nothing else should call native methods directly.
 - **Engine logic belongs in janus-engine.** The Rust bridge is glue, not logic.
 - **SAF sync is lifecycle-bound.** `syncFromSAF` runs in `onResume`, `syncToSAF` runs in `onPause`. Both run on background threads.
 - **Idiomatic Kotlin.** Use Jetpack libraries, coroutines-friendly patterns, and Android resource system.

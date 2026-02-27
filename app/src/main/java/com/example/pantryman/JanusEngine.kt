@@ -20,31 +20,31 @@ data class Ingredient(
 )
 
 /**
- * Kotlin wrapper for the Rust cookbook-engine
+ * Kotlin wrapper for the Rust janus-engine
  */
-class CookbookEngine(dataDir: String) {
+class JanusEngine(dataDir: String, deviceId: String) {
     
     private var nativePtr: Long = 0
     private val gson = Gson()
     
     init {
         try {
-            Log.d("CookbookEngine", "Loading native library: pantryman_bridge")
+            Log.d("JanusEngine", "Loading native library: pantryman_bridge")
             System.loadLibrary("pantryman_bridge")
-            Log.d("CookbookEngine", "Native library loaded successfully")
+            Log.d("JanusEngine", "Native library loaded successfully")
         } catch (e: UnsatisfiedLinkError) {
-            Log.e("CookbookEngine", "Failed to load native library: ${e.message}")
+            Log.e("JanusEngine", "Failed to load native library: ${e.message}")
             throw RuntimeException("Failed to load native library pantryman_bridge", e)
         } catch (e: Exception) {
-            Log.e("CookbookEngine", "Unexpected error loading native library: ${e.message}")
+            Log.e("JanusEngine", "Unexpected error loading native library: ${e.message}")
             throw e
         }
-        Log.d("CookbookEngine", "Calling createDataManager with dataDir: $dataDir")
-        nativePtr = createDataManager(dataDir)
-        Log.d("CookbookEngine", "createDataManager returned nativePtr: $nativePtr")
+        Log.d("JanusEngine", "Calling createDataManager with dataDir: $dataDir")
+        nativePtr = createDataManager(dataDir, deviceId)
+        Log.d("JanusEngine", "createDataManager returned nativePtr: $nativePtr")
         if (nativePtr == 0L) {
-            Log.e("CookbookEngine", "Failed to initialize cookbook engine with data directory: $dataDir")
-            throw RuntimeException("Failed to initialize cookbook engine with data directory: $dataDir")
+            Log.e("JanusEngine", "Failed to initialize cookbook engine with data directory: $dataDir")
+            throw RuntimeException("Failed to initialize janus engine with data directory: $dataDir")
         }
     }
     
@@ -52,15 +52,15 @@ class CookbookEngine(dataDir: String) {
      * Get all ingredients with their pantry status
      */
     fun getAllIngredients(): List<Ingredient> {
-        Log.d("CookbookEngine", "=== getAllIngredients() called ===")
+        Log.d("JanusEngine", "=== getAllIngredients() called ===")
         val json = getAllIngredientsJson(nativePtr)
-        Log.d("CookbookEngine", "=== getAllIngredientsJson returned: ${json.take(100)}... ===")
+        Log.d("JanusEngine", "=== getAllIngredientsJson returned: ${json.take(100)}... ===")
         val type = object : TypeToken<List<Ingredient>>() {}.type
         val ingredients = gson.fromJson<List<Ingredient>>(json, type) ?: emptyList()
         
-        Log.d("CookbookEngine", "=== Parsed ${ingredients.size} ingredients ===")
+        Log.d("JanusEngine", "=== Parsed ${ingredients.size} ingredients ===")
         for (ingredient in ingredients.take(3)) {
-            Log.d("CookbookEngine", "Ingredient: ${ingredient.name}, isInPantry: ${ingredient.isInPantry}, quantity: ${ingredient.quantity}")
+            Log.d("JanusEngine", "Ingredient: ${ingredient.name}, isInPantry: ${ingredient.isInPantry}, quantity: ${ingredient.quantity}")
         }
         
         return ingredients
@@ -151,7 +151,7 @@ class CookbookEngine(dataDir: String) {
     }
     
     // Native method declarations
-    private external fun createDataManager(dataDir: String): Long
+    private external fun createDataManager(dataDir: String, deviceId: String): Long
     private external fun destroyDataManager(nativePtr: Long)
     private external fun getAllIngredientsJson(nativePtr: Long): String
     private external fun getIngredientsByCategoryJson(nativePtr: Long): String
