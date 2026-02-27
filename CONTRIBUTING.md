@@ -8,7 +8,7 @@ rustup target add aarch64-linux-android
 cargo install cargo-ndk
 
 # Clone engine as sibling
-git clone https://github.com/mpr/janus-engine ../janus-engine
+git clone https://github.com/StoppingBuck/janus-engine ../janus-engine
 
 # Connect a physical Android device, then:
 ./dev.sh android
