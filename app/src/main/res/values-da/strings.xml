@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">Pantryman</string>
+    <string name="action_settings">Indstillinger</string>
+    <string name="pantry_empty">Dit spisekammer er tomt.\nTryk på + for at tilføje varer.</string>
+    <string name="hint_search">Søg i spisekammer</string>
+    <string name="hint_quantity">Mængde</string>
+    <string name="hint_quantity_examples">f.eks. 2 dåser · 500 g · en håndfuld</string>
+    <string name="hint_unit">Enhed</string>
+    <string name="hint_ingredient_name">Ingrediensnavn (ental) *</string>
+    <string name="hint_plural">Flertal (valgfri)</string>
+    <string name="hint_category">Kategori (valgfri)</string>
+    <string name="hint_tags">Tags (kommasepareret, valgfri)</string>
+    <string name="hint_search_ingredients">Søg i ingredienser</string>
+    <string name="hint_data_directory">Sti til datamappe</string>
+    <string name="btn_add_item">Tilføj vare</string>
+    <string name="btn_save">Gem</string>
+    <string name="btn_cancel">Annuller</string>
+    <string name="btn_remove_from_pantry">Fjern fra spisekammer</string>
+    <string name="btn_create_new_ingredient">+ Opret ny ingrediens</string>
+    <string name="action_create_named">+ Opret \"%1$s\"</string>
+    <string name="action_create_new">+ Ny ingrediens</string>
+    <string name="btn_add_to_pantry">Tilføj til spisekammer</string>
+    <string name="title_add_to_pantry">Tilføj til spisekammer</string>
+    <string name="title_create_ingredient">Ny ingrediens</string>
+    <string name="title_settings">Indstillinger</string>
+    <string name="title_sync_folder">Synkroniseringsmappe</string>
+    <string name="sync_folder_none">Ikke konfigureret</string>
+    <string name="btn_choose_sync_folder">Vælg synkroniseringsmappe…</string>
+    <string name="btn_sync_now">Synkroniser nu</string>
+    <string name="sync_complete">Synkronisering fuldført</string>
+    <string name="sync_failed">Synkronisering mislykkedes</string>
+    <string name="msg_sync_folder_set">Synkroniseringsmappe konfigureret</string>
+
+    <!-- Toast / error messages -->
+    <string name="msg_failed_to_start">Start mislykkedes: %1$s</string>
+    <string name="category_uncategorised">Ukategoriseret</string>
+    <string name="msg_removed_from_pantry">%1$s fjernet fra spisekammer</string>
+    <string name="btn_update">Opdater</string>
+    <string name="msg_updated">%1$s opdateret</string>
+    <string name="msg_added_to_pantry">%1$s tilføjet til spisekammer</string>
+    <string name="msg_failed_to_update_pantry">Opdatering af spisekammer mislykkedes</string>
+    <string name="btn_create">Opret</string>
+    <string name="msg_name_required">Navn er påkrævet</string>
+    <string name="msg_failed_to_create_ingredient">Oprettelse af ingrediens mislykkedes</string>
+
+    <!-- Settings page -->
+    <string name="settings_heading">Indstillinger</string>
+    <string name="settings_data_directory">Datamappe</string>
+    <string name="settings_current_loading">Aktuel: Indlæser…</string>
+    <string name="settings_choose_data_dir">Vælg datamappe</string>
+    <string name="settings_select_dir_info">Når du vælger en ny datamappe:</string>
+    <string name="settings_dir_if_empty">• Hvis mappen er tom, flyttes dine nuværende data derhen</string>
+    <string name="settings_dir_if_existing">• Hvis mappen indeholder gyldige opskriftsdata, skifter appen til at bruge disse data</string>
+    <string name="settings_about">Om</string>
+    <string name="settings_app_name_full">Pantryman – Opskrift- og spisekammerstyring</string>
+    <string name="settings_version">Version 1.0.0</string>
+    <string name="settings_about_desc">Del af Cookbook-projektet – et program til opskrifter og spisekammer på tværs af platforme.</string>
+
+    <string name="label_in_pantry">På lager</string>
+
+    <!-- Unit suggestions for pantry item dialog -->
+    <string-array name="units">
+        <item></item>
+        <item>stk</item>
+        <item>kg</item>
+        <item>g</item>
+        <item>l</item>
+        <item>dl</item>
+        <item>ml</item>
+        <item>dåse</item>
+        <item>pakke</item>
+        <item>pose</item>
+        <item>flaske</item>
+        <item>karton</item>
+        <item>tsk</item>
+        <item>spsk</item>
+        <item>nip</item>
+    </string-array>
+</resources>

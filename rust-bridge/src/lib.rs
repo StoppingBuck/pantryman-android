@@ -1,13 +1,13 @@
+use janus_engine::{slugify, DataManager, Ingredient};
 use jni::objects::{JClass, JString};
-use jni::sys::{jstring, jboolean, jlong};
+use jni::sys::{jboolean, jlong, jstring};
 use jni::JNIEnv;
-use janus_engine::{DataManager, Ingredient};
 use std::path::Path;
 
 #[cfg(target_os = "android")]
 use android_logger::{Config, FilterBuilder};
 #[cfg(target_os = "android")]
-use log::{debug, info, warn, error};
+use log::{debug, error, info, warn};
 
 // Conditional logging macros
 #[cfg(target_os = "android")]
@@ -36,7 +36,7 @@ fn init_logging() {
     android_logger::init_once(
         Config::default()
             .with_max_level(log::LevelFilter::Debug)
-            .with_tag("PantrymanRust")
+            .with_tag("PantrymanRust"),
     );
 }
 
@@ -46,13 +46,19 @@ fn init_logging() {
 }
 
 // Helper function to convert Java string to Rust string
-fn jstring_to_string(env: &mut JNIEnv, jstr: &JString) -> Result<String, Box<dyn std::error::Error>> {
+fn jstring_to_string(
+    env: &mut JNIEnv,
+    jstr: &JString,
+) -> Result<String, Box<dyn std::error::Error>> {
     let rust_string: String = env.get_string(jstr)?.into();
     Ok(rust_string)
 }
 
 // Helper function to convert Rust string to Java string
-fn string_to_jstring(env: &mut JNIEnv, rust_string: String) -> Result<jstring, Box<dyn std::error::Error>> {
+fn string_to_jstring(
+    env: &mut JNIEnv,
+    rust_string: String,
+) -> Result<jstring, Box<dyn std::error::Error>> {
     let java_string = env.new_string(rust_string)?;
     Ok(java_string.into_raw())
 }
@@ -73,7 +79,7 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_createDataManager(
         Err(e) => {
             log_error!("Failed to convert JString to String: {:?}", e);
             return 0; // Return null pointer on error
-        },
+        }
     };
 
     let device_id_str = match jstring_to_string(&mut env, &device_id) {
@@ -81,7 +87,7 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_createDataManager(
         Err(e) => {
             log_error!("Failed to convert device_id JString: {:?}", e);
             return 0;
-        },
+        }
     };
 
     log_info!("Attempting to create DataManager with path: {}", data_dir);
@@ -106,11 +112,11 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_createDataManager(
         Ok(manager) => {
             log_info!("DataManager created successfully");
             Box::into_raw(Box::new(manager)) as jlong
-        },
+        }
         Err(e) => {
             log_error!("Failed to create DataManager: {:?}", e);
             0 // Return null pointer on error
-        },
+        }
     }
 }
 
@@ -137,60 +143,86 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_getAllIngredientsJ
     manager_ptr: jlong,
 ) -> jstring {
     log_info!("=== getAllIngredientsJson CALLED ===");
-    
+
     if manager_ptr == 0 {
         log_error!("getAllIngredientsJson: manager_ptr is null");
         return string_to_jstring(&mut env, "[]".to_string()).unwrap_or(std::ptr::null_mut());
     }
-    
+
     let manager = unsafe { &*(manager_ptr as *const DataManager) };
-    
+
     // First, log pantry loading details
     log_info!("getAllIngredientsJson: Starting ingredient processing");
     if let Some(pantry) = manager.get_pantry() {
-        log_info!("getAllIngredientsJson: Pantry has {} items", pantry.items.len());
+        log_info!(
+            "getAllIngredientsJson: Pantry has {} items",
+            pantry.items.len()
+        );
         for item in &pantry.items {
-            log_info!("Pantry contains: {} (qty: {:?})", item.ingredient, item.quantity);
+            log_info!(
+                "Pantry contains: {} (qty: {:?})",
+                item.ingredient,
+                item.quantity
+            );
         }
     } else {
         log_info!("getAllIngredientsJson: No pantry loaded");
     }
-    
+
     let ingredients = manager.get_all_ingredients();
-    log_info!("getAllIngredientsJson: Found {} ingredients", ingredients.len());
-    
+    log_info!(
+        "getAllIngredientsJson: Found {} ingredients",
+        ingredients.len()
+    );
+
     let mut ingredient_data = Vec::new();
     for ingredient in ingredients {
         let pantry_item = manager.get_pantry_item(&ingredient.name);
         let is_in_stock = manager.is_in_pantry(&ingredient.name);
-        
-        log_info!("Processing ingredient '{}': pantry_item={:?}, is_in_stock={}", 
-                 ingredient.name, pantry_item.is_some(), is_in_stock);
-        
+
+        log_info!(
+            "Processing ingredient '{}': pantry_item={:?}, is_in_stock={}",
+            ingredient.name,
+            pantry_item.is_some(),
+            is_in_stock
+        );
+
         let (quantity, quantity_type, last_updated) = if let Some(item) = pantry_item {
-            (item.quantity, Some(item.quantity_type.clone()), Some(item.last_updated.clone()))
+            (
+                item.quantity,
+                Some(item.quantity_type.clone()),
+                Some(item.last_updated.clone()),
+            )
         } else {
             (None, None, None)
         };
-        
+
         let ingredient_json = serde_json::json!({
             "name": ingredient.name,
             "slug": ingredient.slug,
             "category": ingredient.category,
             "tags": ingredient.tags,
+            "plural": ingredient.plural,
             "isInPantry": is_in_stock,
             "quantity": quantity,
             "quantityType": quantity_type,
             "lastUpdated": last_updated
         });
-        
-        log_info!("JSON for ingredient '{}': {}", ingredient.name, ingredient_json.to_string());
-        
+
+        log_info!(
+            "JSON for ingredient '{}': {}",
+            ingredient.name,
+            ingredient_json.to_string()
+        );
+
         ingredient_data.push(ingredient_json);
     }
-    
-    log_info!("getAllIngredientsJson: Returning {} ingredient entries", ingredient_data.len());
-    
+
+    log_info!(
+        "getAllIngredientsJson: Returning {} ingredient entries",
+        ingredient_data.len()
+    );
+
     match serde_json::to_string(&ingredient_data) {
         Ok(json) => string_to_jstring(&mut env, json).unwrap_or(std::ptr::null_mut()),
         Err(_) => string_to_jstring(&mut env, "[]".to_string()).unwrap_or(std::ptr::null_mut()),
@@ -207,39 +239,40 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_getIngredientsByCa
     if manager_ptr == 0 {
         return string_to_jstring(&mut env, "{}".to_string()).unwrap_or(std::ptr::null_mut());
     }
-    
+
     let manager = unsafe { &*(manager_ptr as *const DataManager) };
     let ingredients_by_category = manager.get_ingredients_by_category();
-    
+
     let mut result = serde_json::Map::new();
-    
+
     for (category, ingredients) in ingredients_by_category {
         let mut category_ingredients = Vec::new();
         for ingredient in ingredients {
             let pantry_item = manager.get_pantry_item(&ingredient.name);
             let is_in_stock = manager.is_in_pantry(&ingredient.name);
-            
+
             let (quantity, quantity_type) = if let Some(item) = pantry_item {
                 (item.quantity, Some(item.quantity_type.clone()))
             } else {
                 (None, None)
             };
-            
+
             let ingredient_json = serde_json::json!({
                 "name": ingredient.name,
                 "slug": ingredient.slug,
                 "category": ingredient.category,
                 "tags": ingredient.tags,
+                "plural": ingredient.plural,
                 "isInPantry": is_in_stock,
                 "quantity": quantity,
                 "quantityType": quantity_type
             });
-            
+
             category_ingredients.push(ingredient_json);
         }
         result.insert(category, serde_json::Value::Array(category_ingredients));
     }
-    
+
     match serde_json::to_string(&result) {
         Ok(json) => string_to_jstring(&mut env, json).unwrap_or(std::ptr::null_mut()),
         Err(_) => string_to_jstring(&mut env, "{}".to_string()).unwrap_or(std::ptr::null_mut()),
@@ -260,35 +293,47 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_updatePantryStatus
     if manager_ptr == 0 {
         return 0; // false
     }
-    
+
     let ingredient_name_str = match jstring_to_string(&mut env, &ingredient_name) {
         Ok(name) => name,
         Err(_) => return 0,
     };
-    
+
     let quantity_type_str = match jstring_to_string(&mut env, &quantity_type) {
         Ok(qty_type) => qty_type,
         Err(_) => String::new(),
     };
-    
+
     let manager = unsafe { &mut *(manager_ptr as *mut DataManager) };
-    
+
     log_info!("updatePantryStatus called for ingredient: {}, add_to_pantry: {}, quantity: {}, quantity_type: '{}'", 
              ingredient_name_str, add_to_pantry != 0, quantity, quantity_type_str);
-    
+
     if add_to_pantry != 0 {
         // Add to pantry
-        let qty = if quantity > 0 { Some(quantity as f64) } else { None };
-        let qty_type = if quantity_type_str.is_empty() { None } else { Some(quantity_type_str) };
-        
-        log_info!("Adding ingredient '{}' to pantry with quantity: {:?}, quantity_type: {:?}", 
-                 ingredient_name_str, qty, qty_type);
-        
+        let qty = if quantity > 0 {
+            Some(quantity as f64)
+        } else {
+            None
+        };
+        let qty_type = if quantity_type_str.is_empty() {
+            None
+        } else {
+            Some(quantity_type_str)
+        };
+
+        log_info!(
+            "Adding ingredient '{}' to pantry with quantity: {:?}, quantity_type: {:?}",
+            ingredient_name_str,
+            qty,
+            qty_type
+        );
+
         match manager.update_pantry_item(&ingredient_name_str, qty, qty_type) {
             Ok(_) => {
                 log_info!("Successfully added '{}' to pantry", ingredient_name_str);
                 1 // true
-            },
+            }
             Err(e) => {
                 log_error!("Failed to add '{}' to pantry: {:?}", ingredient_name_str, e);
                 0 // false
@@ -297,14 +342,18 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_updatePantryStatus
     } else {
         // Remove from pantry
         log_info!("Removing ingredient '{}' from pantry", ingredient_name_str);
-        
+
         match manager.remove_from_pantry(&ingredient_name_str) {
             Ok(_) => {
                 log_info!("Successfully removed '{}' from pantry", ingredient_name_str);
                 1 // true
-            },
+            }
             Err(e) => {
-                log_error!("Failed to remove '{}' from pantry: {:?}", ingredient_name_str, e);
+                log_error!(
+                    "Failed to remove '{}' from pantry: {:?}",
+                    ingredient_name_str,
+                    e
+                );
                 0 // false
             }
         }
@@ -320,6 +369,7 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_createIngredient(
     name: JString,
     category: JString,
     tags_json: JString,
+    plural_str: JString,
 ) -> jboolean {
     if manager_ptr == 0 {
         return 0;
@@ -340,27 +390,36 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_createIngredient(
         Err(_) => "[]".to_string(),
     };
 
+    let plural = match jstring_to_string(&mut env, &plural_str) {
+        Ok(p) if !p.is_empty() => Some(p),
+        _ => None,
+    };
+
     let tags: Option<Vec<String>> = serde_json::from_str(&tags_str).ok();
 
     let ingredient = Ingredient {
         name: name_str.clone(),
-        slug: name_str.replace(" ", "_").to_lowercase(),
+        slug: slugify(&name_str),
         file_stem: String::new(),
         category: category_str.clone(),
         tags,
-        translations: None,
+        plural,
     };
 
     let manager = unsafe { &mut *(manager_ptr as *mut DataManager) };
 
-    log_info!("createIngredient called for: name='{}', category='{}', tags='{}'",
-             name_str, category_str, tags_str);
+    log_info!(
+        "createIngredient called for: name='{}', category='{}', tags='{}'",
+        name_str,
+        category_str,
+        tags_str
+    );
 
     match manager.create_ingredient(ingredient) {
         Ok(_) => {
             log_info!("Successfully created ingredient '{}'", name_str);
             1 // true
-        },
+        }
         Err(e) => {
             log_error!("Failed to create ingredient '{}': {:?}", name_str, e);
             0 // false
@@ -378,6 +437,7 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_updateIngredient(
     new_name: JString,
     category: JString,
     tags_json: JString,
+    plural_str: JString,
 ) -> jboolean {
     if manager_ptr == 0 {
         return 0;
@@ -403,29 +463,47 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_updateIngredient(
         Err(_) => "[]".to_string(),
     };
 
+    let plural = match jstring_to_string(&mut env, &plural_str) {
+        Ok(p) if !p.is_empty() => Some(p),
+        _ => None,
+    };
+
     let tags: Option<Vec<String>> = serde_json::from_str(&tags_str).ok();
 
     let ingredient = Ingredient {
         name: new_name_str.clone(),
-        slug: new_name_str.replace(" ", "_").to_lowercase(),
+        slug: slugify(&new_name_str),
         file_stem: String::new(),
         category: category_str.clone(),
         tags,
-        translations: None,
+        plural,
     };
 
     let manager = unsafe { &mut *(manager_ptr as *mut DataManager) };
 
-    log_info!("updateIngredient called: '{}' -> '{}', category='{}', tags='{}'",
-             original_name_str, new_name_str, category_str, tags_str);
-    
+    log_info!(
+        "updateIngredient called: '{}' -> '{}', category='{}', tags='{}'",
+        original_name_str,
+        new_name_str,
+        category_str,
+        tags_str
+    );
+
     match manager.update_ingredient(&original_name_str, ingredient) {
         Ok(_) => {
-            log_info!("Successfully updated ingredient '{}' -> '{}'", original_name_str, new_name_str);
+            log_info!(
+                "Successfully updated ingredient '{}' -> '{}'",
+                original_name_str,
+                new_name_str
+            );
             1 // true
-        },
+        }
         Err(e) => {
-            log_error!("Failed to update ingredient '{}': {:?}", original_name_str, e);
+            log_error!(
+                "Failed to update ingredient '{}': {:?}",
+                original_name_str,
+                e
+            );
             0 // false
         }
     }
@@ -442,23 +520,27 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_deleteIngredient(
     if manager_ptr == 0 {
         return 0;
     }
-    
+
     let ingredient_name_str = match jstring_to_string(&mut env, &ingredient_name) {
         Ok(name) => name,
         Err(_) => return 0,
     };
-    
+
     let manager = unsafe { &mut *(manager_ptr as *mut DataManager) };
-    
+
     log_info!("deleteIngredient called for: '{}'", ingredient_name_str);
-    
+
     match manager.delete_ingredient(&ingredient_name_str) {
         Ok(_) => {
             log_info!("Successfully deleted ingredient '{}'", ingredient_name_str);
             1 // true
-        },
+        }
         Err(e) => {
-            log_error!("Failed to delete ingredient '{}': {:?}", ingredient_name_str, e);
+            log_error!(
+                "Failed to delete ingredient '{}': {:?}",
+                ingredient_name_str,
+                e
+            );
             0 // false
         }
     }
@@ -474,12 +556,63 @@ pub extern "system" fn Java_com_example_pantryman_JanusEngine_getAllCategories(
     if manager_ptr == 0 {
         return string_to_jstring(&mut env, "[]".to_string()).unwrap_or(std::ptr::null_mut());
     }
-    
+
     let manager = unsafe { &*(manager_ptr as *const DataManager) };
     let categories = manager.get_unique_categories();
-    
+
     match serde_json::to_string(&categories) {
         Ok(json) => string_to_jstring(&mut env, json).unwrap_or(std::ptr::null_mut()),
         Err(_) => string_to_jstring(&mut env, "[]".to_string()).unwrap_or(std::ptr::null_mut()),
+    }
+}
+
+/// Touch a pantry item — re-saves it with the current timestamp but without changing
+/// its quantity.  Used for "I still have this" swipe-right gestures.
+/// Returns true on success, false if the ingredient is not currently in the pantry.
+#[no_mangle]
+pub extern "system" fn Java_com_example_pantryman_JanusEngine_touchPantryItem(
+    mut env: JNIEnv,
+    _class: JClass,
+    manager_ptr: jlong,
+    ingredient_name: JString,
+) -> jboolean {
+    if manager_ptr == 0 {
+        return 0;
+    }
+
+    let ingredient_name_str = match jstring_to_string(&mut env, &ingredient_name) {
+        Ok(name) => name,
+        Err(_) => return 0,
+    };
+
+    let manager = unsafe { &mut *(manager_ptr as *mut DataManager) };
+
+    // Read existing quantity; if not in pantry, return false.
+    let (qty, qty_type) = match manager.get_pantry_item(&ingredient_name_str) {
+        Some(item) => (item.quantity, item.quantity_type.clone()),
+        None => return 0,
+    };
+
+    let qty_type_opt = if qty_type.is_empty() {
+        None
+    } else {
+        Some(qty_type)
+    };
+
+    log_info!(
+        "touchPantryItem: refreshing timestamp for '{}'",
+        ingredient_name_str
+    );
+
+    match manager.update_pantry_item(&ingredient_name_str, qty, qty_type_opt) {
+        Ok(_) => 1,
+        Err(e) => {
+            log_error!(
+                "touchPantryItem failed for '{}': {:?}",
+                ingredient_name_str,
+                e
+            );
+            0
+        }
     }
 }

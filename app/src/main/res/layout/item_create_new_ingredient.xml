@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    "Create new ingredient" row — always the last item in the ingredient picker list.
+    Styled with colorPrimary text to signal it's an action, not a search result.
+    A thin top divider separates it from the result rows above.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorOutlineVariant" />
+
+    <TextView
+        android:id="@+id/textCreate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="52dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp"
+        android:gravity="center_vertical"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorPrimary" />
+
+</LinearLayout>

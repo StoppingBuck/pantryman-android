@@ -12,6 +12,7 @@ data class Ingredient(
     val slug: String,
     val category: String,
     val tags: List<String>,
+    val plural: String? = null,
     val isInPantry: Boolean = false,
     val quantity: String?,
     val quantityType: String?,
@@ -98,12 +99,13 @@ class JanusEngine(dataDir: String, deviceId: String) {
     fun createIngredient(
         name: String,
         category: String,
-        tags: List<String>? = null
+        tags: List<String>? = null,
+        plural: String? = null
     ): Boolean {
         val tagsJson = gson.toJson(tags ?: emptyList<String>())
-        return createIngredient(nativePtr, name, category, tagsJson)
+        return createIngredient(nativePtr, name, category, tagsJson, plural ?: "")
     }
-    
+
     /**
      * Update an existing ingredient
      */
@@ -111,10 +113,11 @@ class JanusEngine(dataDir: String, deviceId: String) {
         originalName: String,
         newName: String,
         category: String,
-        tags: List<String>? = null
+        tags: List<String>? = null,
+        plural: String? = null
     ): Boolean {
         val tagsJson = gson.toJson(tags ?: emptyList<String>())
-        return updateIngredient(nativePtr, originalName, newName, category, tagsJson)
+        return updateIngredient(nativePtr, originalName, newName, category, tagsJson, plural ?: "")
     }
     
     /**
@@ -133,6 +136,15 @@ class JanusEngine(dataDir: String, deviceId: String) {
         return gson.fromJson(json, type) ?: emptyList()
     }
     
+    /**
+     * Refresh the last_updated timestamp of a pantry item without changing its quantity.
+     * Use this for "I still have this" confirmation swipes.
+     * Returns false if the ingredient is not currently in the pantry.
+     */
+    fun touchPantryItem(ingredientName: String): Boolean {
+        return touchPantryItem(nativePtr, ingredientName)
+    }
+
     /**
      * Clean up native resources
      */
@@ -153,8 +165,9 @@ class JanusEngine(dataDir: String, deviceId: String) {
     private external fun getAllIngredientsJson(nativePtr: Long): String
     private external fun getIngredientsByCategoryJson(nativePtr: Long): String
     private external fun updatePantryStatus(nativePtr: Long, ingredientName: String, addToPantry: Boolean, quantity: Long, quantityType: String): Boolean
-    private external fun createIngredient(nativePtr: Long, name: String, category: String, tagsJson: String): Boolean
-    private external fun updateIngredient(nativePtr: Long, originalName: String, newName: String, category: String, tagsJson: String): Boolean
+    private external fun createIngredient(nativePtr: Long, name: String, category: String, tagsJson: String, plural: String): Boolean
+    private external fun updateIngredient(nativePtr: Long, originalName: String, newName: String, category: String, tagsJson: String, plural: String): Boolean
     private external fun deleteIngredient(nativePtr: Long, ingredientName: String): Boolean
     private external fun getAllCategories(nativePtr: Long): String
+    private external fun touchPantryItem(nativePtr: Long, ingredientName: String): Boolean
 }

@@ -5,12 +5,20 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingHorizontal="16dp"
-    android:paddingVertical="12dp"
+    android:paddingVertical="4dp"
     android:minHeight="56dp"
     android:gravity="center_vertical"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        android:focusable="false" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -33,11 +41,11 @@
 
     </LinearLayout>
 
+    <!-- Shows current pantry quantity when the item is already in stock -->
     <TextView
-        android:id="@+id/textInPantry"
+        android:id="@+id/textCurrentQty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_in_pantry"
         android:textAppearance="?attr/textAppearanceLabelSmall"
         android:textColor="?attr/colorPrimary"
         android:visibility="gone" />

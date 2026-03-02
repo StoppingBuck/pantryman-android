@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Settings"
+        android:text="@string/settings_heading"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="24dp" />
@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Data Directory"
+        android:text="@string/settings_data_directory"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
@@ -25,7 +25,7 @@
         android:id="@+id/textViewCurrentDataDir"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Current: Loading..."
+        android:text="@string/settings_current_loading"
         android:textSize="14sp"
         android:layout_marginBottom="8dp"
         android:background="@android:color/darker_gray"
@@ -36,13 +36,13 @@
         android:id="@+id/buttonSelectDataDir"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Choose Data Directory"
+        android:text="@string/settings_choose_data_dir"
         android:layout_marginBottom="16dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="When you select a new data directory:"
+        android:text="@string/settings_select_dir_info"
         android:textSize="14sp"
         android:textStyle="italic"
         android:layout_marginBottom="8dp" />
@@ -50,7 +50,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="• If the directory is empty, your current data will be moved there"
+        android:text="@string/settings_dir_if_empty"
         android:textSize="12sp"
         android:layout_marginBottom="4dp"
         android:layout_marginStart="8dp" />
@@ -58,7 +58,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="• If the directory contains valid cookbook data, the app will switch to using that data"
+        android:text="@string/settings_dir_if_existing"
         android:textSize="12sp"
         android:layout_marginBottom="16dp"
         android:layout_marginStart="8dp" />
@@ -72,7 +72,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="About"
+        android:text="@string/settings_about"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
@@ -80,21 +80,21 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pantryman - Cookbook Pantry Manager"
+        android:text="@string/settings_app_name_full"
         android:textSize="14sp"
         android:layout_marginBottom="4dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Version 1.0.0"
+        android:text="@string/settings_version"
         android:textSize="12sp"
         android:layout_marginBottom="8dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Part of the Cookbook project - a cross-platform recipe and pantry manager."
+        android:text="@string/settings_about_desc"
         android:textSize="12sp"
         android:layout_marginBottom="16dp" />
 
